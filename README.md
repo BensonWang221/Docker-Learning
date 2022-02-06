@@ -74,4 +74,40 @@ docker commit -m "comment" -a "author" dockerId 目标镜像名[:tag]: 提交容
 子容器 --volumes-from 父容器
 一旦确定了多个容器间的共享，关闭其中几个不影响共享，也就是数据卷容器的生命周期一直持续到没有容器使用为止。
 
+# DockerFile
+dockerfile是用来构建docker image的文件，是一种命令参数脚本
+1. 编写一个dockerfile文件
+2. docker build构建成为一个image
+3. docker run运行image
+4. docker push发布image到hub
+
+dockerfile: 构建文件，定义了一切步骤，源代码
+Docker image: 通过dockerfile构建生成的镜像，最终发布和运行的产品
+Docker 容器: 就是镜像运行起来提供服务的
+
+每个关键字(指令)都必须是大写字母，执行顺序从上到下，#表示注释，每个指令都被创建提交为一个镜像层。
+dockerfile是面向开发的，以后要发布项目，做镜像就要编写docker file。
+
+FROM: 指定基础镜像
+MAINTAINER: 指定维护者信息，一般为姓名+邮箱
+RUN: 镜像构建时需要运行的命令，注意运行是在build期间
+ADD: copy文件/内容，会自动解压，例如tomcat的镜像要添加一个tomcat的压缩包
+WORKDIR: 设置当前工作目录
+VOLUME: 设置卷，挂载主机目录
+EXPOSE: 指定对外的接口
+CMD: 指定运行的命令，只有最后一个会生效，且可被替代，运行是在docker run时运行
+ENTRYPOINT: 指定运行的命令，可以追加命令，运行是在docker run时运行
+ONBUILD: 当构建一个被继承docker file时会运行ONBUILD指令
+COPY: 类似ADD，将文件拷贝到镜像中
+ENV: 构建时设置环境变量
+
+CMD和ENTRYPOINT的区别: 如果是CMD，在docker run后面指定的命令会替换CMD指定的命令，而ENTRYPOINT的话会把docker run的指令追加到ENTRYPOINT后的命令
+例如 CMD ["ls","-a"], 在docker run image -l会报错，因为相当于去执行-l命令，如果是ENTRYPOINT ["ls","-a"], 则相当于执行ls -a -l
+
+# Docker网络
+我们每启动一个docker容器，docker就会给docker容器分配一个ip, 只要安装了docker, 就会有一个网卡docker0
+veth-pair就是一对虚拟设备接口，它们都是成对出现，一端连着协议，一端彼此相连。
+
+
+
 
